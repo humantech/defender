@@ -3,7 +3,6 @@
 namespace Artesaos\Defender;
 
 use Illuminate\Database\Eloquent\Model;
-use Artesaos\Defender\Pivots\PermissionRolePivot;
 use Artesaos\Defender\Pivots\PermissionUserPivot;
 
 /**
@@ -34,21 +33,6 @@ class Permission extends Model
     }
 
     /**
-     * Many-to-many permission-role relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function roles()
-    {
-        return $this->belongsToMany(
-            config('defender.role_model'),
-            config('defender.permission_role_table'),
-            config('defender.permission_key'),
-            config('defender.role_key')
-        )->withPivot('value', 'expires');
-    }
-
-    /**
      * Many-to-many permission-user relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -74,14 +58,9 @@ class Permission extends Model
     public function newPivot(Model $parent, array $attributes, $table, $exists)
     {
         $userModel = app()['config']->get('auth.model');
-        $roleModel = app()['config']->get('defender.role_model');
 
         if ($parent instanceof $userModel) {
             return new PermissionUserPivot($parent, $attributes, $table, $exists);
-        }
-
-        if ($parent instanceof $roleModel) {
-            return new PermissionRolePivot($parent, $attributes, $table, $exists);
         }
 
         return parent::newPivot($parent, $attributes, $table, $exists);

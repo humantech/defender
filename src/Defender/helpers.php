@@ -39,17 +39,3 @@ if (! function_exists('hasPermission')) {
         return count($matches) > 0;
     }
 }
-
-if (! function_exists('roles')) {
-    /**
-     * Check if the user has some of roles.
-     *
-     * @param string|array $roles
-     *
-     * @return bool
-     */
-    function roles($roles)
-    {
-        return defender()->hasRoles(is_array($roles) ? $roles : func_get_args());
-    }
-}

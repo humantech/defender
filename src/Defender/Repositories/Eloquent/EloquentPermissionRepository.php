@@ -48,18 +48,6 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
     }
 
     /**
-     * @param array $rolesIds
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getByRoles(array $rolesIds)
-    {
-        return $this->model->whereHas('roles', function ($query) use ($rolesIds) {
-            $query->whereIn('id', $rolesIds);
-        })->get();
-    }
-
-    /**
      * @param $user
      *
      * @return \Illuminate\Database\Eloquent\Collection

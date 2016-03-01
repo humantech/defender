@@ -1,28 +1,10 @@
 ﻿# Defender
 ----------
 
-[Readme em Português](https://github.com/artesaos/defender/blob/master/README-pt_BR.md).
+#### This is a variant from [artesaos/defender](https://github.com/artesaos/defender) without all role features.
 
 Defender is a Access Control List (ACL) Solution for Laravel 5.1. **(Not compatible with Laravel 5.2)**  
 With security and usability in mind, this project aims to provide you a safe way to control your application access without losing the fun of coding.
-
-> Current Build Status
-
-[![Build Status](https://travis-ci.org/artesaos/defender.svg?branch=master)](https://travis-ci.org/artesaos/defender)
-[![Code Climate](https://codeclimate.com/github/artesaos/defender/badges/gpa.svg)](https://codeclimate.com/github/artesaos/defender)
-[![StyleCI](https://styleci.io/repos/31179862/shield)](https://styleci.io/repos/31179862)
-
-> Statistics
-
-[![Latest Stable Version](https://poser.pugx.org/artesaos/defender/v/stable.svg)](https://packagist.org/packages/artesaos/defender)
-[![Latest Unstable Version](https://poser.pugx.org/artesaos/defender/v/unstable.svg)](https://packagist.org/packages/artesaos/defender) [![License](https://poser.pugx.org/artesaos/defender/license.svg)](https://packagist.org/packages/artesaos/defender)
-[![Total Downloads](https://poser.pugx.org/artesaos/defender/downloads.svg)](https://packagist.org/packages/artesaos/defender)
-[![Monthly Downloads](https://poser.pugx.org/artesaos/defender/d/monthly.png)](https://packagist.org/packages/artesaos/defender)
-[![Daily Downloads](https://poser.pugx.org/artesaos/defender/d/daily.png)](https://packagist.org/packages/artesaos/defender)
-
-> Tips
-
-<a href="http://zenhub.io" target="_blank"><img src="https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png" height="18px" alt="Powered by ZenHub"/></a>
 
 ## Installation
 
@@ -31,7 +13,7 @@ With security and usability in mind, this project aims to provide you a safe way
 Using <a href="https://getcomposer.org/" target="_blank">composer</a>, execute the following command to automatically update your `composer.json`:
 
 ```shell
-composer require artesaos/defender
+composer require humantech/defender
 ```
 
 or manually update your `composer.json` file
@@ -39,7 +21,7 @@ or manually update your `composer.json` file
 ```json
 {
     "require": {
-        "artesaos/defender": "~0.4"
+        "humantech/defender": "~0.1"
     }
 }
 ```
@@ -59,7 +41,7 @@ You need to update your application configuration in order to register the packa
 
 ### 3. User Class
 
-On your User class, add the trait `Artesaos\Defender\Traits\HasDefender` to enable the creation of permissions and roles:
+On your User class, add the trait `Artesaos\Defender\Traits\HasDefender` to enable the creation of permissions:
 
 ```php
 <?php
@@ -130,9 +112,6 @@ protected $routeMiddleware = [
 
     // Access control using permissions
     'needsPermission' => \Artesaos\Defender\Middlewares\NeedsPermissionMiddleware::class,
-
-    // Simpler access control, uses only the groups
-    'needsRole' => \Artesaos\Defender\Middlewares\NeedsRoleMiddleware::class
 ];
 ```
 
@@ -146,18 +125,16 @@ If the built-in middlewares doesn't fit your needs, you can make your own by usi
 
 Defender handles only access control. The authentication is still made by Laravel's `Auth`.
 
-### Creating roles and permissions
+### Creating permissions
 
 #### With commands
 
-You can use these commands to create the roles and permissions for you application.
+You can use these commands to create permissions for you application.
 
 ```shell
-php artisan defender:make:role admin  # creates the role admin
-php artisan defender:make:role member --user=1 # creates the role admin and attaches this role to the user where id=1
 php artisan defender:make:permission users.index "List all the users" # creates the permission
 php artisan defender:make:permission users.create "Create user" --user=1 # creates the permission and attaches it to user where id=1
-php artisan defender:make:permission users.destroy "Delete user" --role=admin # creates the permission and attaches it to the role admin
+php artisan defender:make:permission users.destroy "Delete user" # creates the permission
 ```
 
 #### With the seeder or artisan tinker
@@ -165,10 +142,7 @@ php artisan defender:make:permission users.destroy "Delete user" --role=admin # 
 You can also use the Defender's API. You can create a Laravel Seeder or use `php artisan tinker`.
 
 ```php
-
 use App\User;
-
-$roleAdmin = Defender::createRole('admin');
 
 // The first parameter is the permission name
 // The second is the "friendly" version of the name. (usually for you to show it in your application).
@@ -177,12 +151,6 @@ $permission =  Defender::createPermission('user.create', 'Create Users');
 // You can assign permission directly to a user.
 $user = User::find(1);
 $user->attachPermission($permission);
-
-// or you can add the user to a group and that group has the power to rule create users.
-$roleAdmin->attachPermission($permission);
-
-// Now this user is in the Administrators group.
-$user->attachRole($roleAdmin);
 ```
 
 ### Using the middleware
@@ -260,81 +228,6 @@ Or within controllers:
 $this->middleware('needsPermission:user.index|user.create,true');
 ```
 
-----------
-
-#### Checking Roles: needsRoleMiddleware
-
-This is similar to the previous middleware, but only the roles are checked, it means that it doesn't check the permissions.
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole'], 'is' => 'admin', function()
-{
-    return 'Yes I am!';
-}]);
-```
-
-If you're using Laravel 5.1 it's possible to use Middleware Parameters.
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole:admin'], function() {
-    return 'Yes I am!';
-}]);
-```
-
-With this syntax it's also possible to use the middlewaren within your controllers.
-
-```php
-$this->middleware('needsRole:admin');
-```
-
-You can pass an array of permissions to check on.
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole'], 'shield' => ['admin', 'member'], function()
-{
-    return 'Yes I am!';
-}]);
-```
-
-When using middleware parameters, use a `|` to separate multiple roles.
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole:admin|editor'], function() {
-    return 'Yes I am!';
-}]);
-```
-
-Or within controllers:
-
-```php
-$this->middleware('needsRole:admin|editor');
-```
-
-When you pass an array of permissions, the route will be fired only if the user has all the permissions. However, if you want to allow the access to the route when the user has at least one of the permissions, just add `'any' => true`.
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole'], 'is' => ['admin', 'member'], 'any' => true, function()
-{
-    return 'Yes I am!';
-}]);
-```
-
-Or, with middleware parameters, pass it as the 2nd parameter
-
-```php
-Route::get('foo', ['middleware' => ['auth', 'needsRole:admin|editor,true'], function() {
-    return 'Yes I am!';
-}]);
-```
-
-Or within controllers:
-
-```php
-$this->middleware('needsRole:admin|editor,true');
-```
-
-----------
-
 ### Using in Views
 
 Laravel's Blade extension for using Defender.
@@ -355,30 +248,6 @@ Laravel's Blade extension for using Defender.
 @endshield
 ```
 
-#### @is
-
-```
-@is('admin')
-    Shows data for the logged user and that belongs to the admin role
-@endis
-```
-
-```
-@is('admin')
-    Shows data for the logged user and that belongs to the admin role
-@else
-    shows the data for those who doesn't have the admin permission
-@endis
-```
-
-```
-@is(['role1', 'role2'])
-    Shows data for the logged user and that belongs to the admin role
-@else
-    shows the data for those who doesn't have the admin permission
-@endis
-```
-
 #### Using javascript helper
 
 The stand provides helper for when you need to interact with the user permissions on the front-end.
@@ -391,7 +260,7 @@ echo app('defender')->javascript()->render();
 echo app('defender.javascript')->render();
 ```
 
-This helper injects a javascript code with all permissions and roles of the current user.
+This helper injects a javascript code with all permissions of the current user.
 
 ----------
 
@@ -399,85 +268,33 @@ This helper injects a javascript code with all permissions and roles of the curr
 
 With the Defender's Facade you can access the API and use it at any part of your application.
 
-----------
-
 ##### `Defender::hasPermission($permission)`:
 
 Check if the logged user has the `$permission`.
 
-----------
-
 ##### `Defender::canDo($permission)`:
 
-Check if the logged user has the `$permission`. If the role `superuser` returns true
-
-----------
-
-##### `Defender::roleHasPermission($permission)`:
-
-Check if the logged user has the `$permission` checking only the role permissions.
-
-----------
-
-##### `Defender::hasRole($roleName)`:
-
-Check if the logged user belongs to the role `$roleName`.
-
-----------
-
-##### `Defender::roleExists($roleName)`:
-
-Check if the role `$roleName` exists in the database.
-
-----------
+Check if the logged user has the `$permission`.
 
 ##### `Defender::permissionExists($permissionName)`:
 
 Check if the permission `$permissionName` exists in the database.
 
-----------
-
-##### `Defender::findRole($roleName)`:
-
-Find the role in the database by the name `$roleName`.
-
-----------
-
-##### `Defender::findRoleById($roleId)`:
-
-Find the role in the database by the role ID `roleId`.
-
-----------
-
 ##### `Defender::findPermission($permissionName)`:
 
 Find the permission in the database by the name `$permissionName`.
-
-----------
 
 ##### `Defender::findPermissionById($permissionId)`:
 
 Find the permission in the database by the ID `$permissionId`.
 
-----------
-
-##### `Defender::createRole($roleName)`:
-
-Create a new role in the database.
-
-----------
-
 ##### `Defender::createPermission($permissionName)`:
 
 Create a new permission in the database.
 
-##### `Defender::is($roleName)`:
-
-Check whether the current user belongs to the role.
-
 ##### `Defender::javascript()->render()`:
 
-Returns a javascript script with a list of all roles and permissions of the current user.
+Returns a javascript script with a list of all permissions of the current user.
 The variable name can be modified.
 
 ----------
@@ -502,83 +319,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 This trait, beyond configuring the relationships, will add the following methods to your object `App\User`:
 
-#####`public function hasPermission($permission)`:
+##### `public function hasPermission($permission)`:
 
 This method checks if the logged user has the permission `$permission`
-
-In Defender, there are 2 kind of permissions: `User permissions` and `Role permissions`. By default, the permissions that the user inherits, are permissions of the roles that it belongs to. However, always that a user pemission is set, it will take precedence of role permission.
 
 ```php
 public function foo(Authenticable $user)
 {
     if ($user->hasPermission('user.create'));
-}
-```
-
-----------
-
-##### `public function roleHasPermission($permission)`:
-
-This method works the same way the previous one, the only diference is that the user permissions are not considered, however, only the role's permissions that the user belongs are used to check the access.
-
-```php
-public function foo(Authenticable $user)
-{
-    if ($user->roleHasPermission('user.create');
-}
-```
-
-----------
-
-##### `public function attachRole($role)`:
-
-Attach the user to the role `$role`. The `$role` variable might be an object of the type `Artesaos\Defender\Role` or an array containing the `ids` of the roles.
-
-```php
-public function foo(Authenticable $user)
-{
-    $role = Defender::findRole('admin'); // Returns an Artesao\Defender\Role
-    $user->attachRole($role);
-
-    // or
-
-    $roles = [1, 2, 3]; // Using an array of ids
-    $user->attachRole($roles);
-}
-```
-
-----------
-
-
-##### `public function detachRole($role)`:
-
-Deatach the role `$role` from the user (inverse to `attachRole()`).
-
-```php
-public function foo(Authenticable $user)
-{
-    $role = Defender::findRole('admin'); // Returns an Artesao\Defender\Role
-    $user->detachRole($role);
-
-    // ou
-
-    $roles = [1, 2, 3]; // Using an array of ids
-    $user->detachRole($roles);
-}
-```
-
-----------
-
-##### `public function syncRoles(array $roles = array())`:
-
-This is like the `attachRole()` method, but only the roles in the array `$roles` will be on the relationship after the method runs. `$roles` it's an array of `ids` for the needed roles.
-
-```php
-public function foo(Authenticable $user)
-{
-    $roles = [1, 2, 3]; // Using an array of ids
-
-    $user->syncRoles($roles);
 }
 ```
 
@@ -622,7 +370,7 @@ public function foo(Authenticable $user)
 
 ##### `public function syncPermissions(array $permissions)`:
 
-This is like the method `syncRoles`. but only the roles in the array `$permissions` be on the relationship after the method runs.
+This is like the method `attachPermission`, but only the permissions in the array `$permissions` be on the relationship after the method runs.
 
 ```php
 public function foo(Authenticable $user)
@@ -671,18 +419,13 @@ One of the coolest Defender's features it's to add temporary permissions to a gr
 
 #### For example
 
-> *The user John belongs to the role 'admins', however I want to temporaly remove the John's permission to create new users*
-
-In this case we need to attach an permission with the value equal to `false`, explicitly prohibiting the user to perform that action. You must add this permission, with the `false` value, since by default, the user permissions are inherited of the permissions of their roles. When you assign a user permission, this will always take precedence.
-
-For instance. Below we revoke the permission `user.create` for the user during 7 days.
+Below we revoke the permission `user.create` for the user during 7 days.
 
 ```php
 public function foo()
 {
     $userX = App\User::find(3);
     $permission = Defender::findPermission('user.create');
-
 
     $userX->attachPermission($permission, [
         'value' => false, // false means that he will not have the permission,
@@ -693,10 +436,6 @@ public function foo()
 ```
 
 After 7 days, the user will take the permission again.
-
-----------
-
-> *Allow that a user can perform some action by a period of time.*
 
 To allow that a user have temporary access to perform a given action, just set the `expires` key. The `value` key will be `true` by default.
 

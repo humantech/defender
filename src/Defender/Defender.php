@@ -3,7 +3,6 @@
 namespace Artesaos\Defender;
 
 use Illuminate\Contracts\Foundation\Application;
-use Artesaos\Defender\Contracts\Repositories\RoleRepository;
 use Artesaos\Defender\Contracts\Defender as DefenderContract;
 use Artesaos\Defender\Contracts\Repositories\PermissionRepository;
 
@@ -18,13 +17,6 @@ class Defender implements DefenderContract
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
-
-    /**
-     * The RoleRepository implementation.
-     *
-     * @var RoleRepository
-     */
-    private $roleRepository;
 
     /**
      * The PermissionRepository implementation.
@@ -42,13 +34,11 @@ class Defender implements DefenderContract
      * Class constructor.
      *
      * @param Application          $app
-     * @param RoleRepository       $roleRepository
      * @param PermissionRepository $permissionRepository
      */
-    public function __construct(Application $app, RoleRepository $roleRepository, PermissionRepository $permissionRepository)
+    public function __construct(Application $app, PermissionRepository $permissionRepository)
     {
         $this->app = $app;
-        $this->roleRepository = $roleRepository;
         $this->permissionRepository = $permissionRepository;
     }
 
@@ -97,84 +87,6 @@ class Defender implements DefenderContract
     }
 
     /**
-     * Check if the authenticated user has the given permission
-     * using only the roles.
-     *
-     * @param string $permission
-     * @param bool   $force
-     *
-     * @return bool
-     */
-    public function roleHasPermission($permission, $force = false)
-    {
-        if (! is_null($this->getUser())) {
-            return $this->getUser()->roleHasPermission($permission, $force);
-        }
-
-        return false;
-    }
-
-    /**
-     * Return if the authenticated user has the given role.
-     *
-     * @param string $roleName
-     *
-     * @return bool
-     */
-    public function hasRole($roleName)
-    {
-        if (! is_null($this->getUser())) {
-            return $this->getUser()->hasRole($roleName);
-        }
-
-        return false;
-    }
-
-    /**
-     * Return if the authenticated user has any of the given roles.
-     *
-     * @param string $roles
-     *
-     * @return bool
-     */
-    public function hasRoles($roles)
-    {
-        if (! is_null($this->getUser())) {
-            return $this->getUser()->hasRoles($roles);
-        }
-
-        return false;
-    }
-
-    /**
-     * Return if the authenticated user has the given role.
-     *
-     * @param string|array $roleName
-     *
-     * @return bool
-     */
-    public function is($roleName)
-    {
-        if (is_array($roleName)) {
-            return $this->hasRoles($roleName);
-        }
-
-        return $this->hasRole($roleName);
-    }
-
-    /**
-     * Check if a role with the given name exists.
-     *
-     * @param string $roleName
-     *
-     * @return bool
-     */
-    public function roleExists($roleName)
-    {
-        return $this->roleRepository->findByName($roleName) !== null;
-    }
-
-    /**
      * Check if a permission with the given name exists.
      *
      * @param string $permissionName
@@ -184,30 +96,6 @@ class Defender implements DefenderContract
     public function permissionExists($permissionName)
     {
         return $this->permissionRepository->findByName($permissionName) !== null;
-    }
-
-    /**
-     * Get the role with the given name.
-     *
-     * @param string $roleName
-     *
-     * @return \Artesaos\Defender\Role|null
-     */
-    public function findRole($roleName)
-    {
-        return $this->roleRepository->findByName($roleName);
-    }
-
-    /**
-     * * Find a role by its id.
-     *
-     * @param int $roleId
-     *
-     * @return mixed
-     */
-    public function findRoleById($roleId)
-    {
-        return $this->roleRepository->findById($roleId);
     }
 
     /**
@@ -240,27 +128,6 @@ class Defender implements DefenderContract
     public function permissionsList()
     {
         return $this->permissionRepository->getList('name', 'id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function rolesList()
-    {
-        return $this->roleRepository->getList('name', 'id');
-    }
-
-    /**
-     * Create a new role.
-     * Uses a repository to actually create the role.
-     *
-     * @param string $roleName
-     *
-     * @return \Artesaos\Defender\Role
-     */
-    public function createRole($roleName)
-    {
-        return $this->roleRepository->create($roleName);
     }
 
     /**

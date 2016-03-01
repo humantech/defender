@@ -1,19 +1,11 @@
 {
-  "name": "artesaos/defender",
-  "description": "Roles & Permissions for Laravel 5",
+  "name": "humantech/defender",
+  "description": "Permissions for Laravel 5 forked from artesaos/defender",
   "license": "MIT",
   "authors": [
     {
-      "name": "Andreo Vieira",
-      "email": "andreoav@gmail.com"
-    },
-    {
-      "name": "Luiz Vinicius Reis",
-      "email": "luiz.vinicius73@gmail.com"
-    },
-    {
-      "name": "Vagner do Carmo",
-      "email": "vluzrmos@gmail.com"
+      "name": "Rafael César Neves",
+      "email": "rafael.ceesar@gmail.com"
     }
   ],
   "require": {
