@@ -2,13 +2,11 @@
 
 namespace Artesaos\Defender\Providers;
 
-use Artesaos\Defender\Role;
 use Artesaos\Defender\Defender;
 use Artesaos\Defender\Javascript;
 use Artesaos\Defender\Permission;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
-use Artesaos\Defender\Repositories\Eloquent\EloquentRoleRepository;
 use Artesaos\Defender\Repositories\Eloquent\EloquentUserRepository;
 use Artesaos\Defender\Repositories\Eloquent\EloquentPermissionRepository;
 
@@ -40,7 +38,7 @@ class DefenderServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('defender', function ($app) {
-            return new Defender($app, $app['defender.role'], $app['defender.permission']);
+            return new Defender($app, $app['defender.permission']);
         });
 
         $this->app->singleton('defender.auth', function ($app) {
@@ -71,7 +69,7 @@ class DefenderServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['defender', 'defender.role', 'defender.permission', 'defender.user'];
+        return ['defender', 'defender.permission', 'defender.user'];
     }
 
     /**
@@ -79,14 +77,6 @@ class DefenderServiceProvider extends ServiceProvider
      */
     protected function registerRepositoryInterfaces()
     {
-        $this->app->singleton('defender.role', function ($app) {
-            return new EloquentRoleRepository($app, new Role());
-        });
-
-        $this->app->singleton('Artesaos\Defender\Contracts\Repositories\RoleRepository', function ($app) {
-            return $app['defender.role'];
-        });
-
         $this->app->singleton('defender.permission', function ($app) {
             return new EloquentPermissionRepository($app, new Permission());
         });
@@ -124,17 +114,6 @@ class DefenderServiceProvider extends ServiceProvider
             });
 
             $bladeCompiler->directive('endshield', function ($expression) {
-                return '<?php endif; ?>';
-            });
-
-            /*
-             * add @is and @endis to blade compiler
-             */
-            $bladeCompiler->directive('is', function ($expression) {
-                return "<?php if(app('defender')->hasRoles{$expression}): ?>";
-            });
-
-            $bladeCompiler->directive('endis', function ($expression) {
                 return '<?php endif; ?>';
             });
         });
@@ -177,7 +156,6 @@ class DefenderServiceProvider extends ServiceProvider
      */
     private function registerCommands()
     {
-        $this->commands('Artesaos\Defender\Commands\MakeRole');
         $this->commands('Artesaos\Defender\Commands\MakePermission');
     }
 }

@@ -47,11 +47,6 @@ class DefenderServiceProviderTest extends AbstractTestCase
                 'implementation' => 'Artesaos\Defender\Repositories\Eloquent\EloquentPermissionRepository',
                 'alias' => 'defender.permission',
             ],
-            [
-                'interface' => 'Artesaos\Defender\Contracts\Repositories\RoleRepository',
-                'implementation' => 'Artesaos\Defender\Repositories\Eloquent\EloquentRoleRepository',
-                'alias' => 'defender.role',
-            ],
         ];
 
         foreach ($contracts as $contract) {
@@ -75,9 +70,7 @@ class DefenderServiceProviderTest extends AbstractTestCase
         $this->assertNotEmpty($compiled);
 
         $this->assertNotContains('@shield', $compiled);
-        $this->assertNotContains('@is', $compiled);
         $this->assertNotContains('@endshield', $compiled);
-        $this->assertNotContains('@endis', $compiled);
 
         $this->assertStringEqualsFile($expected, $compiled);
     }
@@ -100,9 +93,7 @@ class DefenderServiceProviderTest extends AbstractTestCase
         $this->assertNotEmpty($compiled);
 
         $this->assertContains('@shield', $compiled);
-        $this->assertContains('@is', $compiled);
         $this->assertContains('@endshield', $compiled);
-        $this->assertContains('@endis', $compiled);
 
         $this->assertStringNotEqualsFile($expected, $compiled);
     }
@@ -114,7 +105,6 @@ class DefenderServiceProviderTest extends AbstractTestCase
     {
         $this->assertTrue(function_exists('defender'), 'Helper \'defender()\' not loaded.');
         $this->assertTrue(function_exists('hasPermission'), 'Helper \'hasPermission()\'  not loaded.');
-        $this->assertTrue(function_exists('roles'), 'Helper \'roles()\'  not loaded.');
     }
 
     /**
@@ -134,7 +124,6 @@ class DefenderServiceProviderTest extends AbstractTestCase
         if ($this->isInIsolation()) {
             $this->assertFalse(function_exists('defender'), 'Helper \'defender()\' loaded.');
             $this->assertFalse(function_exists('hasPermission'), 'Helper \'hasPermission()\'  loaded.');
-            $this->assertFalse(function_exists('roles'), 'Helper \'roles()\'  loaded.');
         }
     }
 
@@ -150,11 +139,8 @@ class DefenderServiceProviderTest extends AbstractTestCase
         $resourcesPath = __DIR__.'/../../src/resources';
 
         $migrations = [
-            $resourcesPath.'/migrations/2015_02_23_161101_create_defender_roles_table.php',
             $resourcesPath.'/migrations/2015_02_23_161102_create_defender_permissions_table.php',
-            $resourcesPath.'/migrations/2015_02_23_161103_create_defender_role_user_table.php',
             $resourcesPath.'/migrations/2015_02_23_161104_create_defender_permission_user_table.php',
-            $resourcesPath.'/migrations/2015_02_23_161105_create_defender_permission_role_table.php',
         ];
 
         /*

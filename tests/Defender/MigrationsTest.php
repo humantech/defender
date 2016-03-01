@@ -49,16 +49,6 @@ class MigrationsTest extends AbstractTestCase
             ],
 
             /*
-             * Roles Table.
-             */
-            config('defender.role_table', 'roles') => [
-                'id',
-                'name',
-                'created_at',
-                'updated_at',
-            ],
-
-            /*
              * Permissions Table.
              */
             config('defender.permission_table', 'permissions') => [
@@ -77,24 +67,6 @@ class MigrationsTest extends AbstractTestCase
                 config('defender.permission_key', 'permission_id'),
                 'value',
                 'expires',
-            ],
-
-            /*
-             * Permissoins Role Relational Table.
-             */
-            config('defender.permission_role_table', 'permission_role') => [
-                config('defender.permission_key', 'permission_id'),
-                config('defender.role_key', 'role_id'),
-                'value',
-                'expires',
-            ],
-
-            /*
-             * Roles Users Relational Table.
-             */
-            config('defender.role_user_table', 'role_user') => [
-                'user_id',
-                config('defender.role_key', 'role_id'),
             ],
         ];
 

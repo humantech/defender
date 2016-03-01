@@ -2,7 +2,6 @@
     (function(w){
         var defender = {};
 
-        defender.roles = [];
         defender.permissions = [];
 
         w.defender = defender;

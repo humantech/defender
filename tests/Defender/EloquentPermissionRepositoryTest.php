@@ -4,7 +4,6 @@ namespace Artesaos\Defender\Testing;
 
 use Artesaos\Defender\Permission;
 use Artesaos\Defender\Repositories\Eloquent\EloquentPermissionRepository;
-use Artesaos\Defender\Role;
 
 /**
  * Class EloquentPermissionRepositoryTest.
@@ -33,7 +32,6 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
 
         $this->seed([
             'UserTableSeeder',
-            'RoleTableSeeder',
         ]);
     }
 
@@ -82,27 +80,6 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
         $this->assertInstanceOf(
             'Artesaos\Defender\Pivots\PermissionUserPivot',
             $user->permissions->first()->pivot
-        );
-    }
-
-    /**
-     *  Testing if permission is attached to role.
-     */
-    public function testShouldAttachPermissionToRole()
-    {
-        $permission = $this->createPermission('users.index');
-
-        $role = Role::where(['name' => 'admin'])->first();
-
-        $permission->roles()->attach($role);
-
-        $this->seePermissionAttachedToRoleInDatabase($permission, $role);
-
-        $this->assertTrue($permission->roles()->get()->contains($role->id));
-
-        $this->assertInstanceOf(
-            'Artesaos\Defender\Pivots\PermissionRolePivot',
-            $role->permissions->first()->pivot
         );
     }
 
@@ -156,28 +133,6 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
     }
 
     /**
-     * Create and Attach a Permission to User.
-     * @param string $permission
-     * @param Role $role Role or array of where clausules.
-     * @param string $readableName Permission readable name.
-     * @return array Array containing created $permission and $role.
-     */
-    protected function createAndAttachPermissionToRole($permission, $role, $readableName = null)
-    {
-        $permission = $this->createPermission($permission, $readableName);
-
-        if (! ($role instanceof Role)) {
-            $role = User::where($role)->first();
-        }
-
-        $permission->roles()->attach($role);
-
-        $this->seePermissionAttachedToRoleInDatabase($permission, $role);
-
-        return [$permission, $role];
-    }
-
-    /**
      * Assert to see in Database a Permission attached to User.
      * @param Permission $permission
      * @param User $user
@@ -194,7 +149,7 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
     }
 
     /**
-     * Assert to see in Database a Role attached to User.
+     * Assert to not see in Database a Permission attached to User.
      * @param Permission $permission
      * @param User $user
      */
@@ -205,38 +160,6 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
             [
                 config('defender.permission_key', 'permission_id') => $permission->id,
                 'user_id' => $user->id,
-            ]
-        );
-    }
-
-    /**
-     * Assert to see in Database a Permission attached to Role.
-     * @param Permission $permission
-     * @param Role $role
-     */
-    protected function seePermissionAttachedToRoleInDatabase(Permission $permission, Role $role)
-    {
-        $this->seeInDatabase(
-            config('defender.permission_role_table', 'permission_role'),
-            [
-                config('defender.permission_key', 'permission_id') => $permission->id,
-                config('defender.role_key', 'role_id') => $role->id,
-            ]
-        );
-    }
-
-    /**
-     * Assert to not see in Database a Permission attached to Role.
-     * @param Permission $permission
-     * @param Role $role
-     */
-    protected function notSeePermissionAttachedToRoleInDatabase(Permission $permission, Role $role)
-    {
-        $this->notSeeInDatabase(
-            config('defender.permission_role_table', 'permission_role'),
-            [
-                config('defender.permission_key', 'permission_id') => $permission->id,
-                config('defender.role_key', 'role_id') => $role->id,
             ]
         );
     }

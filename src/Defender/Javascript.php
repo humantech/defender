@@ -28,25 +28,11 @@ class Javascript implements JavascriptContract
      */
     public function render()
     {
-        $roles = $this->getRoles();
         $permissions = $this->getPermissions();
 
         return view('defender::javascript', [
-            'roles' => $roles ? $roles->lists('name')->toJson() : '[]',
             'permissions' => $permissions ? $permissions->lists('name')->toJson() : '[]',
         ]);
-    }
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getRoles()
-    {
-        $user = $this->defender->getUser();
-
-        $roles = $user ? $user->roles()->get()->toBase() : null;
-
-        return $roles;
     }
 
     /**

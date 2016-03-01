@@ -35,12 +35,11 @@ class JavascriptTest extends AbstractTestCase
 
         $this->seed([
             'UserTableSeeder',
-            'RoleTableSeeder',
         ]);
 
         $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', 'Orchestra\Testbench\Exceptions\Handler');
 
-        $this->defender = new Defender($this->app, $this->app['defender.role'], $this->app['defender.permission']);
+        $this->defender = new Defender($this->app, $this->app['defender.permission']);
         $this->defender->setUser(User::first());
     }
 
@@ -58,19 +57,15 @@ class JavascriptTest extends AbstractTestCase
 
         $data = $view->getData();
 
-        $this->assertArrayHasKey('roles', $data);
         $this->assertArrayHasKey('permissions', $data);
 
-        $this->assertTrue(is_string($data['roles']));
         $this->assertTrue(is_string($data['permissions']));
 
         /*
          * Not empty string, it could be a empty json array string
          */
-        $this->assertNotEmpty($data['roles']);
         $this->assertNotEmpty($data['permissions']);
 
-        $this->assertJson($data['roles']);
         $this->assertJson($data['permissions']);
 
         $this->assertStringMatchesFormatFile(
@@ -101,32 +96,6 @@ class JavascriptTest extends AbstractTestCase
 
         $this->assertStringMatchesFormatFile(
             $this->stubsPath('views/javascript-with-permission.blade.output.txt'),
-            $view->render()
-        );
-    }
-
-    /**
-     * Asserting created role and rendered properly.
-     */
-    public function testShouldRenderUserRole()
-    {
-        $user = $this->defender->getUser();
-
-        $role = $this->defender->createRole('js.role');
-
-        $user->attachRole($role);
-
-        /** @var View $view */
-        $view = $this->defender->javascript()->render();
-
-        $data = $view->getData();
-
-        $this->assertArrayHasKey('roles', $data);
-
-        $this->assertFalse('[]' == $data['roles']);
-
-        $this->assertStringMatchesFormatFile(
-            $this->stubsPath('views/javascript-with-role.blade.output.txt'),
             $view->render()
         );
     }

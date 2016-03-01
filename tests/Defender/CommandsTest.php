@@ -8,9 +8,6 @@
  */
 namespace Artesaos\Defender\Testing;
 
-use Artesaos\Defender\Role;
-use Artesaos\Defender\Contracts\Repositories\RoleRepository;
-
 class CommandsTest extends AbstractTestCase
 {
     /**
@@ -27,7 +24,6 @@ class CommandsTest extends AbstractTestCase
 
         $this->seed([
             'UserTableSeeder',
-            'RoleTableSeeder',
         ]);
     }
 
@@ -76,62 +72,5 @@ class CommandsTest extends AbstractTestCase
         $user = User::find(1);
 
         $this->assertEquals('user.index', $user->permissions->where('name', 'user.index')->first()->name);
-    }
-
-    /**
-     * Creating a permission to Role.
-     */
-    public function testCommandShouldMakeAPermissionToRole()
-    {
-        $this->artisan('defender:make:permission', ['name' => 'user.delete', 'readableName' => 'Remove Users', '--role' => 'admin']);
-        $this->seeInDatabase(
-            config('defender.permission_table', 'permissions'),
-            [
-                'name' => 'user.delete',
-                'readable_name' => 'Remove Users',
-            ]
-        );
-
-        /* @var RoleRepository $role */
-        $rolesRepository = app('defender.role');
-
-        /** @var Role $role */
-        $role = $rolesRepository->findByName('admin');
-
-        $this->assertEquals('user.delete', $role->permissions->where('name', 'user.delete')->first()->name);
-    }
-
-    /**
-     * Creating a Role.
-     */
-    public function testCommandShouldMakeARole()
-    {
-        $this->artisan('defender:make:role', ['name' => 'a.role']);
-
-        $this->seeInDatabase(
-            config('defender.role_table', 'roles'),
-            [
-                'name' => 'a.role',
-            ]
-        );
-    }
-
-    /**
-     * Creating a Role to User.
-     */
-    public function testCommandShouldMakeARoleToUser()
-    {
-        $this->artisan('defender:make:role', ['name' => 'user.role', '--user' => 1]);
-
-        $this->seeInDatabase(
-            config('defender.role_table', 'roles'),
-            [
-                'name' => 'user.role',
-            ]
-        );
-
-        $user = User::find(1);
-
-        $this->assertEquals('user.role', $user->roles->where('name', 'user.role')->first()->name);
     }
 }
