@@ -32,8 +32,7 @@ trait HasDefender
     }
 
     /**
-     * Checks for permission
-     * If has superuser group automatically passes.
+     * Returns if the current user has the given permission.
      *
      * @param string $permission
      * @param bool   $force
