@@ -21,6 +21,7 @@ class Permission extends Model
     protected $fillable = [
         'name',
         'readable_name',
+        'module_id'
     ];
 
     /**
@@ -44,7 +45,7 @@ class Permission extends Model
             config('defender.permission_user_table'),
             config('defender.permission_key'),
             'user_id'
-        )->withPivot('value', 'expires');
+        )->withPivot('value', 'expires', 'domain_id');
     }
 
     /**

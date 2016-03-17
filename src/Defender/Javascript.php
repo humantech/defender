@@ -31,7 +31,7 @@ class Javascript implements JavascriptContract
         $permissions = $this->getPermissions();
 
         return view('defender::javascript', [
-            'permissions' => $permissions ? $permissions->lists('name')->toJson() : '[]',
+            'permissions' => $permissions ? $permissions->toJson() : '[]',
         ]);
     }
 

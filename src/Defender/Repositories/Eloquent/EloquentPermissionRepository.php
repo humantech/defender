@@ -32,7 +32,7 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
      *
      * @return Permission
      */
-    public function create($permissionName, $readableName = null)
+    public function create($permissionName, $readableName = null, $moduleId = 0)
     {
         if (! is_null($this->findByName($permissionName))) {
             throw new PermissionExistsException('The permission '.$permissionName.' already exists'); // TODO: add translation support
@@ -44,6 +44,7 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
         return $permission = $this->model->create([
             'name'          => $permissionName,
             'readable_name' => $readableName,
+            'module_id'     => $moduleId,
         ]);
     }
 
@@ -58,6 +59,29 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
 
         return $user->permissions()
             ->where($table.'.value', true)
+            ->where(function ($q) use ($table) {
+                $q->where($table.'.expires', '>=', Carbon::now());
+                $q->orWhereNull($table.'.expires');
+            })
+            ->get();
+    }
+
+    /**
+     * @param $user
+     * @param $domainId
+     * @param $moduleId
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getActivesByUserInModule($user, $domainId, $moduleId)
+    {
+        $table = $user->permissions()->getTable();
+        $permissionsTable = config('defender.permission_table', 'permissions');
+
+        return $user->permissions()
+            ->where($permissionsTable.'.module_id', $moduleId)
+            ->where($table.'.value', true)
+            ->where($table.'.domain_id', $domainId)
             ->where(function ($q) use ($table) {
                 $q->where($table.'.expires', '>=', Carbon::now());
                 $q->orWhereNull($table.'.expires');

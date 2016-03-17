@@ -33,6 +33,9 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
         $this->seed([
             'UserTableSeeder',
         ]);
+
+        $this->defender = new Defender($this->app, $this->app['defender.permission']);
+        $this->defender->setUser(User::first());
     }
 
     /**
@@ -81,6 +84,24 @@ class EloquentPermissionRepositoryTest extends AbstractTestCase
             'Artesaos\Defender\Pivots\PermissionUserPivot',
             $user->permissions->first()->pivot
         );
+    }
+
+    /**
+     * Testing the criation of permissions and domain associations.
+     */
+    public function testShouldCreatePermissionToModuleAndAttachToDomain()
+    {
+        $user = $this->defender->getUser();
+
+        $permission = $this->defender->createPermission('users.create', 'Create Users', 1);
+
+        $user->attachPermission($permission, ['domain_id' => 1]);
+
+        $this->assertTrue($user->hasPermission('users.create', 1, 1));
+
+        $this->assertFalse($user->hasPermission('users.create', 2, 1));
+
+        $this->assertFalse($user->hasPermission('users.create', 1, 2));
     }
 
     /**

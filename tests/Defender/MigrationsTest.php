@@ -55,6 +55,7 @@ class MigrationsTest extends AbstractTestCase
                 'id',
                 'name',
                 'readable_name',
+                'module_id',
                 'created_at',
                 'updated_at',
             ],
@@ -67,6 +68,7 @@ class MigrationsTest extends AbstractTestCase
                 config('defender.permission_key', 'permission_id'),
                 'value',
                 'expires',
+                'domain_id',
             ],
         ];
 

@@ -20,13 +20,14 @@ trait HasDefender
      * Returns if the current user has the given permission.
      *
      * @param string $permission
-     * @param bool   $force
+     * @param int    $domainId
+     * @param int    $moduleId
      *
      * @return bool
      */
-    public function hasPermission($permission, $force = false)
+    public function hasPermission($permission, $domainId, $moduleId)
     {
-        $permissions = $this->getAllPermissions($force)->lists('name')->toArray();
+        $permissions = app('defender.permission')->getActivesByUserInModule($this, $domainId, $moduleId)->lists('name')->toArray();
 
         return in_array($permission, $permissions);
     }
@@ -35,13 +36,14 @@ trait HasDefender
      * Returns if the current user has the given permission.
      *
      * @param string $permission
-     * @param bool   $force
+     * @param int    $domainId
+     * @param int    $moduleId
      *
      * @return bool
      */
-    public function canDo($permission, $force = false)
+    public function canDo($permission, $domainId, $moduleId)
     {
-        return $this->hasPermission($permission, $force);
+        return $this->hasPermission($permission, $moduleId, $domainId);
     }
 
     /**
@@ -71,7 +73,13 @@ trait HasDefender
 
         $permissions = $permissions
             ->map(function ($permission) {
-                unset($permission->pivot, $permission->created_at, $permission->updated_at);
+                unset(
+                    $permission->pivot->user_id,
+                    $permission->pivot->permission_id,
+                    $permission->pivot->value,
+                    $permission->pivot->expires,
+                    $permission->created_at,
+                    $permission->updated_at);
 
                 return $permission;
             });

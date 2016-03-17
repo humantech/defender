@@ -22,8 +22,9 @@ trait InteractsWithPermissions
         }
 
         $this->permissions()->attach($permission, [
-            'value'   => array_get($options, 'value', true),
-            'expires' => array_get($options, 'expires', null),
+            'value'     => array_get($options, 'value', true),
+            'expires'   => array_get($options, 'expires', null),
+            'domain_id' => array_get($options, 'domain_id', 0),
         ]);
     }
 

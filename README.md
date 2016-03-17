@@ -1,7 +1,7 @@
 ﻿# Defender
 ----------
 
-#### This is a variant from [artesaos/defender](https://github.com/artesaos/defender) without all role features.
+#### This is a variant from [artesaos/defender](https://github.com/artesaos/defender) with support to modules and domains of permission, without all role features from main project.
 
 Defender is a Access Control List (ACL) Solution for Laravel 5.1. **(Not compatible with Laravel 5.2)**  
 With security and usability in mind, this project aims to provide you a safe way to control your application access without losing the fun of coding.
@@ -130,6 +130,8 @@ Defender handles only access control. The authentication is still made by Larave
 #### With commands
 
 You can use these commands to create permissions for you application.
+
+### #TODO: Add module features here
 
 ```shell
 php artisan defender:make:permission users.index "List all the users" # creates the permission
@@ -268,13 +270,13 @@ This helper injects a javascript code with all permissions of the current user.
 
 With the Defender's Facade you can access the API and use it at any part of your application.
 
-##### `Defender::hasPermission($permission)`:
+##### `Defender::hasPermission($permission, $domainId, $moduleId)`:
 
-Check if the logged user has the `$permission`.
+Check if the logged user has the `$permission` in the module on domain.
 
-##### `Defender::canDo($permission)`:
+##### `Defender::canDo($permission, $domainId, $moduleId)`:
 
-Check if the logged user has the `$permission`.
+Check if the logged user has the `$permission` in the module on domain.
 
 ##### `Defender::permissionExists($permissionName)`:
 
@@ -288,7 +290,7 @@ Find the permission in the database by the name `$permissionName`.
 
 Find the permission in the database by the ID `$permissionId`.
 
-##### `Defender::createPermission($permissionName)`:
+##### `Defender::createPermission($permissionName, $moduleId)`:
 
 Create a new permission in the database.
 
@@ -319,14 +321,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 This trait, beyond configuring the relationships, will add the following methods to your object `App\User`:
 
-##### `public function hasPermission($permission)`:
+##### `public function hasPermission($permission, $domainId, $moduleId)`:
 
 This method checks if the logged user has the permission `$permission`
 
 ```php
 public function foo(Authenticable $user)
 {
-    if ($user->hasPermission('user.create'));
+    if ($user->hasPermission('user.create', 1, 1));
 }
 ```
 
@@ -343,6 +345,7 @@ public function foo(Authenticable $user)
 
     $user->attachPermission($permission, [
         'value' => true // true = has the permission, false = doesn't have the permission,
+        'domain_id' => 1,
     ]);
 }
 ```
