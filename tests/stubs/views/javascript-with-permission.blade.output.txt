@@ -2,7 +2,7 @@
     (function(w){
         var defender = {};
 
-        defender.permissions = ["js.permission"];
+        defender.permissions = [{"id":"1","name":"js.permission","readable_name":"js.permission","module_id":"0","pivot":{"domain_id":"0"}}];
 
         w.defender = defender;
     })(window);

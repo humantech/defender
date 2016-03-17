@@ -72,7 +72,7 @@ interface Defender
      *
      * @return \Artesaos\Defender\Permission
      */
-    public function createPermission($permissionName, $readableName = null);
+    public function createPermission($permissionName, $readableName = null, $moduleId = 0);
 
     /**
      * @return \Artesaos\Defender\Javascript

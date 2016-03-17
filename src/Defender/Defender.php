@@ -136,9 +136,9 @@ class Defender implements DefenderContract
      *
      * @return Permission
      */
-    public function createPermission($permissionName, $readableName = null)
+    public function createPermission($permissionName, $readableName = null, $moduleId = 0)
     {
-        return $this->permissionRepository->create($permissionName, $readableName);
+        return $this->permissionRepository->create($permissionName, $readableName, $moduleId);
     }
 
     /**

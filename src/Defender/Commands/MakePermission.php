@@ -80,10 +80,10 @@ class MakePermission extends Command
      *
      * @return \Artesaos\Defender\Permission
      */
-    protected function createPermission($name, $readableName)
+    protected function createPermission($name, $readableName, $moduleId = 0)
     {
         // No need to check is_null($permission) as create() throwsException
-        $permission = $this->permissionRepository->create($name, $readableName);
+        $permission = $this->permissionRepository->create($name, $readableName, $moduleId);
 
         $this->info('Permission created successfully');
 
@@ -96,11 +96,15 @@ class MakePermission extends Command
      * @param \Artesaos\Defender\Permission $permission
      * @param int                           $userId
      */
-    protected function attachPermissionToUser($permission, $userId)
+    protected function attachPermissionToUser($permission, $userId, array $options = [])
     {
         // Check if user exists
         if ($user = $this->userRepository->findById($userId)) {
-            $user->attachPermission($permission);
+            $user->attachPermission($permission, [
+                'value'     => array_get($options, 'value', true),
+                'expires'   => array_get($options, 'expires', null),
+                'domain_id' => array_get($options, 'domain_id', 0),
+            ]);
             $this->info('Permission attached successfully to user');
         } else {
             $this->error('Not possible to attach permission. User not found');

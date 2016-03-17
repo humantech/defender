@@ -17,5 +17,5 @@ interface PermissionRepository extends AbstractRepository
      *
      * @return \Artesaos\Defender\Permission;
      */
-    public function create($permissionName, $readableName = null);
+    public function create($permissionName, $readableName = null, $moduleId = 0);
 }

@@ -21,6 +21,7 @@ class CreateDefenderPermissionUserTable extends Migration
 
             $table->tinyInteger('value')->default(-1);
             $table->timestamp('expires')->nullable();
+            $table->integer('domain_id')->nullable();
         });
     }
 

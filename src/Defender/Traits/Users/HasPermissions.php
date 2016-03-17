@@ -25,7 +25,7 @@ trait HasPermissions
             config('defender.permission_user_table'),
             'user_id',
             config('defender.permission_key')
-        )->withPivot('value', 'expires');
+        )->withPivot('value', 'expires', 'domain_id');
     }
 
     /**
