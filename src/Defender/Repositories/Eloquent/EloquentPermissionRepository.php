@@ -34,7 +34,7 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
      */
     public function create($permissionName, $readableName = null, $moduleId = 0)
     {
-        if (! is_null($this->findByName($permissionName))) {
+        if (! is_null($this->model->where('name', '=', $permissionName)->where('module_id', '=', $moduleId)->first())) {
             throw new PermissionExistsException('The permission '.$permissionName.' already exists'); // TODO: add translation support
         }
 
