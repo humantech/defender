@@ -12,10 +12,12 @@ class CreateDefenderPermissionsTable extends Migration
     {
         Schema::create(config('defender.permission_table', 'permissions'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('readable_name');
             $table->integer('module_id');
             $table->timestamps();
+
+            $table->unique(['name', 'module_id']);
         });
     }
 
