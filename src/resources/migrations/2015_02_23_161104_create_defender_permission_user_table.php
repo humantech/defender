@@ -16,12 +16,21 @@ class CreateDefenderPermissionUserTable extends Migration
 
             $table->integer(config('defender.permission_key', 'permission_id'))->unsigned()->index();
             $table->foreign(config('defender.permission_key', 'permission_id'))->references('id')
-                  ->on(config('defender.permission_table', 'permissions'))
-                  ->onDelete('cascade');
+                ->on(config('defender.permission_table', 'permissions'))
+                ->onDelete('cascade');
+
+            $table->integer(config('defender.domain_key', 'domain_id'))->unsigned()->index();
+            $table->foreign(config('defender.domain_key', 'domain_id'))->references('id')
+                ->on(config('defender.domain_table', 'domains'))
+                ->onDelete('cascade');
+
+            $table->integer(config('defender.module_key', 'module_id'))->unsigned()->index();
+            $table->foreign(config('defender.module_key', 'module_id'))->references('id')
+                ->on(config('defender.module_table', 'modules'))
+                ->onDelete('cascade');
 
             $table->tinyInteger('value')->default(-1);
             $table->timestamp('expires')->nullable();
-            $table->integer('domain_id')->nullable();
         });
     }
 
@@ -33,6 +42,8 @@ class CreateDefenderPermissionUserTable extends Migration
         Schema::table(config('defender.permission_user_table', 'permission_user'), function (Blueprint $table) {
             $table->dropForeign(config('defender.permission_user_table', 'permission_user').'_user_id_foreign');
             $table->dropForeign(config('defender.permission_user_table', 'permission_user').'_'.config('defender.permission_key', 'permission_id').'_foreign');
+            $table->dropForeign(config('defender.permission_user_table', 'permission_user').'_'.config('defender.domain_key', 'domain_id').'_foreign');
+            $table->dropForeign(config('defender.permission_user_table', 'permission_user').'_'.config('defender.module_key', 'module_id').'_foreign');
         });
 
         Schema::drop(config('defender.permission_user_table', 'permission_user'));
