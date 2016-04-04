@@ -45,7 +45,27 @@ class Permission extends Model
             config('defender.permission_user_table'),
             config('defender.permission_key'),
             'user_id'
-        )->withPivot('value', 'expires', 'domain_id');
+        )->withPivot('value', 'expires', 'domain_id', 'module_id');
+    }
+
+    public function modules()
+    {
+        return $this->belongsToMany(
+            config('defender.module_model'),
+            config('defender.permission_user_table'),
+            config('defender.permission_key'),
+            config('defender.module_key')
+        )->withPivot('value', 'expires', 'domain_id', 'user_id');
+    }
+
+    public function domains()
+    {
+        return $this->belongsToMany(
+            config('defender.domain_model'),
+            config('defender.permission_user_table'),
+            config('defender.permission_key'),
+            config('defender.domain_key')
+        )->withPivot('value', 'expires', 'module_id', 'user_id');
     }
 
     /**

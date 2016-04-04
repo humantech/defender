@@ -21,6 +21,18 @@ return [
      */
     'permission_key' => 'permission_id',
 
+    'module_model' => App\Module::class,
+
+    'module_table' => 'modules',
+
+    'module_key' => 'module_id',
+
+    'domain_model' => App\Domain::class,
+
+    'domain_table' => 'domains',
+
+    'domain_key' => 'domain_id',
+
     /*
      * Pivot table for permissions and users
      */

@@ -76,11 +76,10 @@ class EloquentPermissionRepository extends AbstractEloquentRepository implements
     public function getActivesByUserInModule($user, $domainId, $moduleId)
     {
         $table = $user->permissions()->getTable();
-        $permissionsTable = config('defender.permission_table', 'permissions');
 
         return $user->permissions()
-            ->where($permissionsTable.'.module_id', $moduleId)
             ->where($table.'.value', true)
+            ->where($table.'.module_id', $moduleId)
             ->where($table.'.domain_id', $domainId)
             ->where(function ($q) use ($table) {
                 $q->where($table.'.expires', '>=', Carbon::now());
