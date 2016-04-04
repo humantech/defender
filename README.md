@@ -10,7 +10,20 @@ With security and usability in mind, this project aims to provide you a safe way
 
 ### 1. Dependency
 
-Using <a href="https://getcomposer.org/" target="_blank">composer</a>, execute the following command to automatically update your `composer.json`:
+First add following repository to your `composer.json` file
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/humantech/defender"
+        }
+    ]
+}
+```
+
+after using <a href="https://getcomposer.org/" target="_blank">composer</a>, execute the following command to automatically update your `composer.json`:
 
 ```shell
 composer require humantech/defender
