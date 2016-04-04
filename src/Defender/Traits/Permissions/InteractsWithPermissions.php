@@ -25,6 +25,7 @@ trait InteractsWithPermissions
             'value'     => array_get($options, 'value', true),
             'expires'   => array_get($options, 'expires', null),
             'domain_id' => array_get($options, 'domain_id', 0),
+            'module_id' => array_get($options, 'module_id', 0),
         ]);
     }
 

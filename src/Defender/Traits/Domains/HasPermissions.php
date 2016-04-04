@@ -1,6 +1,6 @@
 <?php
 
-namespace Artesaos\Defender\Traits\Users;
+namespace Artesaos\Defender\Traits\Domains;
 
 use Illuminate\Database\Eloquent\Model;
 use Artesaos\Defender\Pivots\PermissionUserPivot;
@@ -21,11 +21,11 @@ trait HasPermissions
     public function permissions()
     {
         return $this->belongsToMany(
-            config('defender.permission_model'),
+            config('defender.domain_model'),
             config('defender.permission_user_table'),
-            'user_id',
+            config('defender.domain_key'),
             config('defender.permission_key')
-        )->withPivot('value', 'expires', 'domain_id', 'module_id');
+        )->withPivot('value', 'expires', 'module_id', 'user_id');
     }
 
     /**
@@ -38,9 +38,9 @@ trait HasPermissions
      */
     public function newPivot(Model $parent, array $attributes, $table, $exists)
     {
-        $permissionModel = app()['config']->get('defender.permission_model');
+        $domainModel = app()['config']->get('defender.domain_model');
 
-        if ($parent instanceof $permissionModel) {
+        if ($parent instanceof $domainModel) {
             return new PermissionUserPivot($parent, $attributes, $table, $exists);
         }
 
