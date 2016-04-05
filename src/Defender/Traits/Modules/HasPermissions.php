@@ -21,7 +21,7 @@ trait HasPermissions
     public function permissions()
     {
         return $this->belongsToMany(
-            config('defender.module_model'),
+            config('defender.permission_model'),
             config('defender.permission_user_table'),
             config('defender.module_key'),
             config('defender.permission_key')
