@@ -22,7 +22,7 @@ interface Defender
      *
      * @return bool
      */
-    public function hasPermission($permission, $force = false);
+    public function hasPermission($permission, $domainId, $moduleId);
 
     /**
      * Check if the authenticated user has the given permission.
