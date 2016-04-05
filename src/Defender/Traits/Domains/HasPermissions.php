@@ -21,7 +21,7 @@ trait HasPermissions
     public function permissions()
     {
         return $this->belongsToMany(
-            config('defender.domain_model'),
+            config('defender.permission_model'),
             config('defender.permission_user_table'),
             config('defender.domain_key'),
             config('defender.permission_key')
@@ -38,9 +38,9 @@ trait HasPermissions
      */
     public function newPivot(Model $parent, array $attributes, $table, $exists)
     {
-        $domainModel = app()['config']->get('defender.domain_model');
+        $permissionModel = app()['config']->get('defender.permission_model');
 
-        if ($parent instanceof $domainModel) {
+        if ($parent instanceof $permissionModel) {
             return new PermissionUserPivot($parent, $attributes, $table, $exists);
         }
 
